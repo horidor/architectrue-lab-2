@@ -1,31 +1,59 @@
 package main
 
 import (
-	"flag"
-	"fmt"
+  "flag"
+  "fmt"
+  "io"
+  "os"
+  "strings"
 
-	lab2 "github.com/horidor/architectrue-lab-2"
+  lab2 "github.com/horidor/architectrue-lab-2"
 )
 
 var (
-	inputExpression = flag.String("e", "", "Expression to compute")
-	// TODO: Add other flags support for input and output configuration.
+  inputExpression = flag.String("e", "", "Expression to compute")
+  flagOutput      = flag.String("o", "", "Output file destination (stdout if empty)")
+  flagInput       = flag.String("f", "", "Input file path")
 )
 
 func main() {
-	flag.Parse()
+  flag.Parse()
 
-	// TODO: Change this to accept input from the command line arguments as described in the task and
-	//       output the results using the ComputeHandler instance.
-	//       handler := &lab2.ComputeHandler{
-	//           Input: {construct io.Reader according the command line parameters},
-	//           Output: {construct io.Writer according the command line parameters},
-	//       }
-	//       err := handler.Compute()
+  var Input io.Reader
+  var Output io.Writer = os.Stdout
 
-	var prefix string = "+ 5 * - 4 2 3"
-	postfix, _ := lab2.PrefixToPostfix(prefix)
-	fmt.Println("Prefix: " + prefix)
-	fmt.Println("Postfix: " + postfix)
+  if len(*flagInput) > 0 && len(*inputExpression) > 0 {
+    fmt.Fprintf(os.Stderr, "Specify only one way of input")
+    return
+  }
+
+  Input = strings.NewReader(*inputExpression)
+
+  if len(*flagInput) > 0 {
+    file, err := os.Open(*flagInput)
+    if err != nil {
+      fmt.Fprintf(os.Stderr, "Specified file is not found")
+      return
+    }
+    Input = file
+  }
+
+  if len(*flagOutput) > 0 {
+    _, err := os.Stat(*flagOutput)
+    if !os.IsNotExist(err) {
+      fmt.Fprintf(os.Stderr, "Improper or existing file path given")
+    }
+    file, _ := os.OpenFile(*flagOutput, os.O_CREATE|os.O_WRONLY, 0644)
+    Output = file
+  }
+
+  handler := &lab2.ComputeHandler{
+    Input:  Input,
+    Output: Output,
+  }
+  err := handler.Compute()
+  if err != nil {
+    fmt.Fprintf(os.Stderr, err.Error())
+    return
+  }
 }
-
