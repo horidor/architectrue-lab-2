@@ -80,6 +80,7 @@ func PrefixToPostfix(prefix string) (string, error) {
 	var op2 string = ""
 	var postfix string
 	var errorMsg error
+	var isValid bool = true
 
 	for i := len(prefixarr) - 1; i >= 0; i-- {
 		if isOperator(prefixarr[i][0]) {
@@ -88,15 +89,24 @@ func PrefixToPostfix(prefix string) (string, error) {
 				op2 = s.pop()
 				temp = op1 + " " + op2 + " " + string(prefixarr[i][0])
 				s.push(temp)
-			}
+			} else {
+				isValid = false
+			  }
 		} else if isOperands(prefixarr[i]) {
 			temp = string(prefixarr[i])
 			s.push(temp)
-		}
+		} else {
+			isValid = false
+			break
+		  }
 	}
-
-	postfix = s.pop()
-	errorMsg = nil
+	if !isValid {
+		postfix = ""
+		errorMsg = fmt.Errorf("Invalid Prefix")
+	  } else {
+		postfix = s.pop()
+		errorMsg = nil
+	  }
 
 	return postfix, errorMsg
 }
