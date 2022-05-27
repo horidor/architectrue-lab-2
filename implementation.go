@@ -1,6 +1,7 @@
 package lab2
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
