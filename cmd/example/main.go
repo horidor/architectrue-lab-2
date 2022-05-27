@@ -23,6 +23,9 @@ func main() {
 	//       }
 	//       err := handler.Compute()
 
-	res, _ := lab2.PrefixToPostfix("+ 2 2")
-	fmt.Println(res)
+	var prefix string = "+ 5 * - 4 2 3"
+	postfix, _ := lab2.PrefixToPostfix(prefix)
+	fmt.Println("Prefix: " + prefix)
+	fmt.Println("Postfix: " + postfix)
 }
+
