@@ -74,6 +74,9 @@ func isOperands(text string) bool {
 }
 
 func PrefixToPostfix(prefix string) (string, error) {
+	if prefix == "" || prefix == " " {
+		return "", fmt.Errorf("Empty string")
+	  }
 	var prefixarr []string = strings.Split(prefix, " ")
 	var s *MyStack = initStack()
 	var temp string = ""
