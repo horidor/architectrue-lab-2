@@ -35,6 +35,7 @@ func main() {
       fmt.Fprintf(os.Stderr, "Specified file is not found")
       return
     }
+    defer file.Close()
     Input = file
   }
 
@@ -43,7 +44,11 @@ func main() {
     if !os.IsNotExist(err) {
       fmt.Fprintf(os.Stderr, "Improper or existing file path given")
     }
-    file, _ := os.OpenFile(*flagOutput, os.O_CREATE|os.O_WRONLY, 0644)
+    file, err := os.OpenFile(*flagOutput, os.O_CREATE|os.O_WRONLY, 0644)
+    if err != nil {
+      fmt.Fprintf(os.Stderr, "Error while creating new file")
+    }
+    defer file.Close()
     Output = file
   }
 
@@ -51,6 +56,7 @@ func main() {
     Input:  Input,
     Output: Output,
   }
+  
   err := handler.Compute()
   if err != nil {
     fmt.Fprintf(os.Stderr, err.Error())
